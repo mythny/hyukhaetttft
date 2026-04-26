@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>致ABB｜赫海温馨小屋建造日记</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+  body {
+    background: url('mainbackground.jpg') no-repeat center center / cover fixed;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+/* 新增半透明遮罩 */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* 0.3 是透明度，可调整为 0.2~0.5 */
+    z-index: 1;
+}
+/* 让所有内容层级高于遮罩 */
+.container {
+    position: relative;
+    z-index: 10;
+}
+
+        .mouse-follow {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+        }
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.8s ease;
+        }
+        @keyframes fadeIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            background: #0066cc;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #004499;
+            transform: scale(1.05);
+        }
+        .level {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+        }
+        .level.active {
+            display: flex;
+            animation: levelFade 0.5s ease;
+        }
+        @keyframes levelFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .full-house {
+            position: relative;
+            width: 280px;
+            height: 320px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            filter: drop-shadow(0 8px 18px rgba(0, 45, 90, 0.25));
+            overflow: visible;
+        }
+        .full-house:hover {
+            transform: translateY(-6px) scale(1.03);
+        }
+        .house-roof {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-bottom: 90px solid #0055aa;
+        }
+        .house-roof::after{
+            content:"D&E";
+            position:absolute;
+            top:35px;
+            left:50%;
+            transform:translateX(-50%);
+            color:#fff;
+            font-size:14px;
+            letter-spacing:2px;
+            opacity:0.85;
+        }
+        .house-chimney {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            width: 35px;
+            height: 60px;
+            background: #e8d9b9;
+            border-radius: 4px 4px 0 0;
+        }
+        .house-wall {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 240px;
+            height: 210px;
+            background: #f6f0e8;
+            border-radius: 6px 6px 0 0;
+        }
+        .house-wall::before {
+            content: "Hae & Wook";
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 13px;
+            color: #0055aa;
+            letter-spacing: 1px;
+            opacity: 0.12;
+            pointer-events: none;
+        }
+        .house-window {
+            width: 50px;
+            height: 50px;
+            background: #eef5fc;
+            border: 3px solid #0055aa;
+            border-radius: 6px;
+            position: absolute;
+            box-shadow: inset 0 0 12px #ffd990, 0 0 8px rgba(255,210,140,0.35);
+        }
+        .window-left { top: 40px; left: 30px; }
+        .window-right { top: 40px; right: 30px; }
+        .win-line-h {
+            width: 100%; height: 2px;
+            background: #0055aa;
+            position: absolute; top: 50%;
+        }
+        .win-line-v {
+            width: 2px; height: 100%;
+            background: #0055aa;
+            position: absolute; left: 50%;
+        }
+        .house-main-door {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 110px;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+        }
+        .door-panel {
+            width: 100%;
+            height: 100%;
+            background: #004488;
+            transform-origin: left center;
+            transition: transform 0.6s ease;
+        }
+        .full-house.open .door-panel {
+            transform: rotateY(-75deg);
+        }
+        .door-knob {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            width: 10px;
+            height: 10px;
+            background: #c5d8eb;
+            border-radius: 50%;
+        }
+        .house-step {
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 10px;
+            background: #d8dce2;
+            border-radius: 2px;
+        }
+        .star-light, .heart-light {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.6;
+            animation: floatLight 3.5s ease-in-out infinite;
+        }
+        .star-light {
+            left: 15%;
+            bottom: 10px;
+            font-size: 16px;
+            color: #ffd990;
+            animation-delay: 0s;
+        }
+        .heart-light {
+            right: 15%;
+            bottom: 14px;
+            font-size: 14px;
+            color: #ff8fb3;
+            animation-delay: 1.2s;
+        }
+        @keyframes floatLight {
+            0%,100% { transform: translateY(0); opacity: 0.5; }
+            50% { transform: translateY(-12px); opacity: 0.9; }
+        }
+
+        .build-canvas {
+            width: 300px;
+            height: 220px;
+            position: relative;
+            margin: 10px auto;
+            background: rgba(255,255,255,0.04);
+            border-radius: 12px;
+            border: 1px dashed rgba(0,85,170,0.3);
+            overflow: hidden;
+        }
+        .build-part {
+            position: absolute;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.7s ease;
+        }
+        .build-part.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .part-base {
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 12px;
+            background: #c5d8eb;
+            border-radius: 2px;
+        }
+        .part-wall-left {
+            bottom: 27px;
+            left: 50%;
+            transform: translateX(-110px);
+            width: 10px;
+            height: 120px;
+            background: #0055aa;
+        }
+        .part-wall-right {
+            bottom: 27px;
+            right: 50%;
+            transform: translateX(-110px);
+            width: 10px;
+            height: 120px;
+            background: #0055aa;
+        }
+        .part-beam {
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 220px;
+            height: 8px;
+            background: #004488;
+        }
+        .part-roof {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 120px solid transparent;
+            border-right: 120px solid transparent;
+            border-bottom: 60px solid rgba(0,85,170,0.6);
+        }
+        .build-mark {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            color: #0055aa;
+            letter-spacing: 4px;
+            opacity: 0;
+            transition: all 0.8s ease 0.3s;
+        }
+        .build-mark.show {
+            opacity: 0.45;
+        }
+        .build-btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 300px;
+            margin: 15px auto 0;
+        }
+        .build-btn {
+            padding: 10px 0;
+            text-align: center;
+            background: rgba(0,85,170,0.2);
+            border: 1px solid rgba(0,85,170,0.5);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        .build-btn:hover {
+            background: rgba(0,85,170,0.35);
+            border-color: #ffd990;
+        }
+        .build-btn.active {
+            background: rgba(0,85,170,0.45);
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .build-tip {
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .house-container {
+            width: 90%;
+            max-width: 700px;
+            height: 480px;
+            background: #ffffff;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            border: 6px solid #0066cc;
+        }
+        .house-bg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #f8f9ff;
+        }
+        .house-spot {
+            width: 36px;
+            height: 36px;
+            background: #ffd700;
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #0066cc;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255,215,0,0.6);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .house-spot:hover {
+            transform: scale(1.2);
+        }
+        .house-spot.done {
+            background: #0066cc;
+            color: white;
+            pointer-events: none;
+        }
+        .house-item {
+            position: absolute;
+            max-width: 140px;
+            text-align: center;
+            animation: itemPop 0.6s ease forwards;
+            opacity: 0;
+            transform: scale(0.5);
+            z-index: 5;
+        }
+        @keyframes itemPop {
+            to { opacity: 1; transform: scale(1); }
+        }
+        .house-item p {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #333;
+            font-weight: bold;
+        }
+        .house-complete {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.75);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 18px;
+            display: none;
+            z-index: 200;
+        }
+        .house-complete.active {
+            display: block;
+            animation: textFade 0.8s ease forwards;
+        }
+
+        .desk-area {
+            width: 80%;
+            max-width: 500px;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .skill-cards {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .skill-card {
+            width: 130px;
+            height: 130px;
+            background: #0066cc;
+            color: white;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+        .skill-card:hover {
+            transform: scale(1.08);
+        }
+        .skill-card.active-card{
+            background: #ffd700;
+            color: #0066cc;
+            box-shadow: 0 0 15px rgba(255,215,0,0.5);
+            transform: scale(1.1);
+        }
+        .skill-card:active{
+            transform: scale(0.95);
+        }
+
+        .cake {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+        .cake-base {
+            width: 200px;
+            height: 80px;
+            background: #ffd700;
+            border-radius: 10px 10px 0 0;
+            position: absolute;
+            bottom: 0;
+        }
+        .cake-middle {
+            width: 180px;
+            height: 70px;
+            background: #ffb800;
+            border-radius: 10px 10px 0 0;
+            position: absolute;
+            bottom: 80px;
+            left: 10px;
+        }
+        .cake-top {
+            width: 160px;
+            height: 50px;
+            background: #ff9900;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 150px;
+            left: 20px;
+        }
+        .candle {
+            width: 10px;
+            height: 40px;
+            background: white;
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 3px;
+        }
+        .flame {
+            width: 15px;
+            height: 25px;
+            background: orange;
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            box-shadow: 0 0 10px orange;
+            animation: flame 0.5s infinite alternate;
+        }
+        @keyframes flame {
+            from { transform: translateX(-50%) scale(1); }
+            to { transform: translateX(-50%) scale(1.1); }
+        }
+        .wish-input {
+            padding: 12px 20px;
+            border: 2px solid #0066cc;
+            border-radius: 50px;
+            width: 80%;
+            max-width: 400px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .fireworks {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: white;
+            z-index: 999;
+            animation: fireworks 1s ease-out forwards;
+        }
+        @keyframes fireworks {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(10); opacity: 0; }
+        }
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: pink;
+            transform: rotate(45deg);
+            z-index: 999;
+            animation: heart 1s ease-out forwards;
+        }
+        .heart::before, .heart::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: pink;
+            border-radius: 50%;
+        }
+        .heart::before { top: -10px; left: 0; }
+        .heart::after { top: 0; left: -10px; }
+        @keyframes heart {
+            0% { transform: rotate(45deg) scale(1); opacity: 1; }
+            100% { transform: rotate(45deg) scale(0); opacity: 0; }
+        }
+
+        .hidden { display: none; }
+        @media (max-width: 768px) {
+            .house-container{ height: 400px; }
+            .modal-content, .desk-area { width: 90%; padding: 20px; }
+        }
+
+        .house-spot.main {
+            width: 44px;
+            height: 44px;
+            font-size: 22px;
+        }
+        .house-spot.sub {
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+        }
+        .house-item .cover-box {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(120deg, #0066cc 30%, #ffd700 90%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            border: 3px solid #ffd700;
+        }
+        .tip-decor {
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-shadow: 0 1px 3px #000;
+        }
+        .close-btn {
+            padding: 8px 20px;
+            background: #ccc;
+            border-radius: 30px;
+            border: none;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .house-item:hover {
+            transform: translateY(-4px);
+            transition: 0.3s ease;
+        }
+/* 第五关优化 · 无生日版本 */
+.memories-bg{
+    width: 320px;
+    height: 260px;
+    background: linear-gradient(145deg, #eef4fb, #f8f0f5);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,66,153,0.15);
+}
+.memories-decor{
+    position: absolute;
+    font-size: 40px;
+    opacity: 0.08;
+    user-select: none;
+}
+.decor-left{ top: 20px; left: 20px; }
+.decor-right{ bottom: 20px; right: 20px; }
+.memo-text{
+    text-align: center;
+    color: #0055aa;
+    line-height: 2;
+    padding: 0 30px;
+    z-index: 2;
+    position: relative;
+}
+.soft-input{
+    border: 1px solid #0066cc;
+    background: rgba(255,255,255,0.85);
+    border-radius: 30px;
+    padding: 10px 18px;
+    width: 75%;
+    margin-top: 22px;
+    outline: none;
+    color: #333;
+}
+    </style>
+</head>
+<body>
+    <div class="mouse-follow"></div>
+    <div class="container">
+
+        <div class="modal" id="startModal">
+            <div class="modal-content">
+                <h2>祝霏霏酱21岁生日快乐🥳</h2>
+                <p style="margin:20px 0;">欢迎来到我们的小屋<br>今天，我们一起亲手建造它</p>
+                <button class="btn" id="startBtn">进入小屋</button>
+            </div>
+        </div>
+
+        <div class="level" id="level1">
+            <h2 style="color:white; margin-bottom:30px; text-shadow: 0 2px 8px rgba(0,0,0,0.2);">赫海小屋·跳跳糖</h2>
+            <div class="full-house" id="door">
+                <div class="house-roof"></div>
+                <div class="house-chimney"></div>
+                <div class="house-wall">
+                    <div class="house-window window-left">
+                        <div class="win-line-h"></div>
+                        <div class="win-line-v"></div>
+                    </div>
+                    <div class="house-window window-right">
+                        <div class="win-line-h"></div>
+                        <div class="win-line-v"></div>
+                    </div>
+                    <div class="house-main-door">
+                        <div class="door-panel">
+                            <div class="door-knob"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="house-step"></div>
+                <div class="star-light">✦</div>
+                <div class="heart-light">♡</div>
+            </div>
+            <p style="color:white; margin-top:24px; font-size:18px; text-shadow: 0 1px 4px rgba(0,0,0,0.3);">
+                这里是大门！开启幸福安妮人生（*v*)
+            </p>
+            <div class="modal" id="doorModal">
+                <div class="modal-content">
+                    <h3>欢迎回家，ABB</h3>
+                    <p>这是独属于annie大王的治愈小屋<br>专属于@天天太霏糖</p>
+                    <button class="btn" id="toLevel2">开始搭建小屋框架</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="level" id="level2">
+            <h2 style="color:white; margin-bottom:20px; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">小屋建造 · 可视化搭建框架</h2>
+            <p style="color:#fff; margin-bottom:20px; font-size:16px; opacity:0.95;">
+                按顺序点击建造组件，一块一块拼出赫海小屋骨架
+            </p>
+            <div class="build-canvas">
+                <div class="build-part part-base"></div>
+                <div class="build-part part-wall-left"></div>
+                <div class="build-part part-wall-right"></div>
+                <div class="build-part part-beam"></div>
+                <div class="build-part part-roof"></div>
+                <div class="build-mark">D & E</div>
+            </div>
+            <div class="build-btn-group">
+                <div class="build-btn" data-step="1">铺设地基</div>
+                <div class="build-btn" data-step="2">搭建墙体</div>
+                <div class="build-btn" data-step="3">加装梁柱</div>
+                <div class="build-btn" data-step="4">封顶构架</div>
+            </div>
+            <p class="build-tip" style="color:#fff; margin-top:16px;">当前进度：0 / 4</p>
+            <div class="modal" id="frameModal">
+                <div class="modal-content">
+                    <h3>小屋框架 建造完成 ✨</h3>
+                    <p>骨架稳稳搭建完毕<br>跳跳糖飞天中……</p>
+                    <button class="btn" id="toLevel3">进入室内 · 开始装修</button>
+                </div>
+            </div>
+        </div>
+
+  <div class="level" id="level3">
+    <h2 style="color:white; margin-bottom:20px;">舞台纪念 · 你最爱的五个舞台</h2>
+    <p class="tip-decor">点击房间各处光点，点亮最爱✨</p>
+    <p style="color:white; margin-bottom:20px;">点击光点，开始收集吧</p>
+    <div class="house-container">
+        <div class="house-bg"></div>
+        <!-- 5个光点位置不变，只是文字会变成舞台名称 -->
+        <div class="house-spot sub" data-index="0" style="top:80px; left:120px;">1</div>
+        <div class="house-spot sub" data-index="1" style="top:120px; right:130px;">2</div>
+        <div class="house-spot sub" data-index="2" style="bottom:180px; left:150px;">3</div>
+        <div class="house-spot sub" data-index="3" style="bottom:120px; right:160px;">4</div>
+        <div class="house-spot main" data-index="4" style="top:220px; left:50%; transform:translateX(-50%);">5</div>
+    </div>
+    <div class="house-complete" id="houseComplete">
+        ✨ 五大舞台 · 收藏完成！✨<br><br>
+        这里装满赫海的高光时刻<br>
+        也装满我们的热爱与回忆
+    </div>
+    <div class="modal" id="houseModal">
+        <div class="modal-content">
+            <p>舞台收藏完成！接下来为你布置专属书桌～</p>
+            <button class="btn" id="toLevel4">前往专属书桌</button>
+        </div>
+    </div>
+</div>
+
+<!-- 第四关 升级版｜文手&剪辑手 + 6个作品展示位（修复版） -->
+<div class="level" id="level4">
+    <h2 style="color:white; margin-bottom:20px; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">创作者跳跳糖的书桌</h2>
+    <p style="color:#fff; margin-bottom:25px; opacity:0.95;">
+        你的创作是无出其右的珍贵
+    </p>
+    <div class="desk-area" style="position:relative; overflow-y:auto; max-width:600px; max-height:70vh; padding-bottom:20px;">
+        <div style="position:absolute; bottom:0; left:0; width:100%; height:90px; background:#f0f4f9; border-radius:0 0 20px 20px;"></div>
+        <div style="position:absolute; top:20px; left:25px; font-size:26px; opacity:0.15;">📖</div>
+        <div style="position:absolute; top:20px; right:25px; font-size:26px; opacity:0.15;">🎞️</div>
+        <div style="position:absolute; bottom:25px; left:50px; font-size:20px; opacity:0.2;">✒️</div>
+        <div style="position:absolute; bottom:25px; right:50px; font-size:20px; opacity:0.2;">💻</div>
+
+        <h3 style="position:relative; z-index:2; color:#0066cc; margin-bottom:25px;">这里全部都是你的心血</h3>
+        
+        <!-- 双天赋解锁卡片 -->
+        <div class="skill-cards">
+            <div class="skill-card" id="writeCard">
+                <h3>同人文手</h3>
+                <p>所有爱恨的起点</p>
+                <span style="font-size:12px; opacity:0.8; margin-top:6px;">待解锁</span>
+            </div>
+            <div class="skill-card" id="editCard">
+                <h3>咔咔剪刀手</h3>
+                <p>流畅的美丽光影</p>
+                <span style="font-size:12px; opacity:0.8; margin-top:6px;">待解锁</span>
+            </div>
+        </div>
+
+        <!-- 文手作品区 3个空位 -->
+        <div id="writeWorkBox" style="margin-top:25px; text-align:left; display:none;">
+            <h4 style="color:#0055aa; margin-bottom:12px; font-size:16px; border-left:4px solid #0066cc; padding-left:10px;">
+                ✍️ 文字作品收录
+            </h4>
+            <div style="display:grid; gap:10px;">
+                <div style="background:rgba(0,85,170,0.08); padding:12px; border-radius:10px;">
+                    <div style="font-weight:bold; color:#004488;">作品一：《血、骨、皮》</div>
+                    <div style="font-size:13px; color:#555; margin-top:4px;">作品简介：连载、西环、单性转</div>
+                </div>
+                <div style="background:rgba(0,85,170,0.08); padding:12px; border-radius:10px;">
+                    <div style="font-weight:bold; color:#004488;">作品二：《艳牌》</div>
+                    <div style="font-size:13px; color:#555; margin-top:4px;">作品简介：短篇、黑帮、单性转</div>
+                </div>
+                <div style="background:rgba(0,85,170,0.08); padding:12px; border-radius:10px;">
+                    <div style="font-weight:bold; color:#004488;">作品三：《军魂》</div>
+                    <div style="font-size:13px; color:#555; margin-top:4px;">作品简介：短篇、军属院、我最喜欢</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 剪辑作品区 3个空位 -->
+        <div id="editWorkBox" style="margin-top:20px; text-align:left; display:none;">
+            <h4 style="color:#0055aa; margin-bottom:12px; font-size:16px; border-left:4px solid #ffd700; padding-left:10px;">
+                🎬 剪辑作品收录
+            </h4>
+            <div style="display:grid; gap:10px;">
+                <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:10px;">
+                    <div style="font-weight:bold; color:#b38600;">视频一：《水泼落地难收回》</div>
+                    <div style="font-size:13px; color:#555; margin-top:4px;">作品简介：体感是最流畅的剪辑，开篇对于青涩小赫海的素材选择非常合适也最有印象，没想到你也最喜欢</div>
+                </div>
+                <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:10px;">
+                    <div style="font-weight:bold; color:#b38600;">视频二：《【赫海】两张美丽的脸…》</div>
+                    <div style="font-size:13px; color:#555; margin-top:4px;">作品简介：好像是红薯数据最佳，总之二代豆果然还是二代BGM对味儿！喜欢喜欢</div>
+                </div>
+                <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:10px;">
+                    <div style="font-weight:bold; color:#b38600;">视频三：《【李赫宰】“You're one in a million”
+》</div>
+                    <div style="font-size:13px; color:#555; margin-top:4px;">作品简介：最爱的BGM和最漂亮的正规一，伟大无需多言</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p id="skillTip" style="color:#fff; margin-top:20px; font-size:15px; text-shadow:0 1px 3px #000;">
+        点击两张卡片，解锁专属作品展示墙
+    </p>
+
+    <div class="modal" id="skillModal">
+        <div class="modal-content">
+            <h3>双重身份 · 完美解锁 💌</h3>
+            <p style="line-height:1.8;">
+                以文字寄热爱，以剪辑藏浪漫<br>
+                希望你最珍贵的创作欲永不消亡<br>
+                在爱的国度里永远做一颗小跳跳糖
+            </p>
+            <button class="btn" id="toLevel5">前往寄语</button>
+        </div>
+    </div>
+</div>
+
+   <!-- 第五关 优化版｜无生日·回忆纪念主题 -->
+<div class="level" id="level5">
+    <h2 style="color:white; margin-bottom:26px; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">希望你和幸福常伴</h2>
+    <p style="color:#fff; margin-bottom:20px; opacity:0.93;">
+        把喜欢与陪伴悄悄记录，定格专属的温柔时刻
+    </p>
+
+    <div class="memories-bg" id="memoBox">
+        <div class="memories-decor decor-left">♡</div>
+        <div class="memories-decor decor-right">✦</div>
+        <div class="memo-text">
+            <h3>能遇见你真的很开心——！</h3>
+            <p>幸福是和你聊天看你的作品<br>如此煎蛋的代码里是不煎蛋的小跳跳糖</p>
+        </div>
+    </div>
+
+    <p style="color:#fff; margin-top:24px; font-size:15px;">
+        对制作者有什么建议与看法可以在此输入…^^
+    </p>
+
+    <input type="text" class="soft-input hidden" id="wishInput" placeholder="记录一段心情、热爱与期许……">
+    <button class="btn hidden" id="wishBtn">保存寄语</button>
+
+    <div class="modal" id="wishModal">
+        <div class="modal-content">
+            <h3>我搞了半天也没动明白这个代码怎么保存所以再让我努力一下吧！</h3>
+            <p style="line-height:1.8;">
+                每一份偏爱都值得被好好珍藏<br>
+                文字与光影留住心动瞬间<br>
+                和霏霏酱来日方长
+            </p>
+            <button class="btn" id="toLevel6">前往最终纪念页</button>
+        </div>
+    </div>
+</div>
+<!-- 第六关 优化升级版｜纯纪念·无生日 -->
+<div class="level" id="level6">
+    <h2 style="color:white; margin-bottom:24px; text-shadow: 0 2px 6px rgba(0,0,0,0.15);">终点</h2>
+    <div style="background:#ffffff; padding:35px 30px; border-radius:24px; text-align:center; max-width:520px;
+                box-shadow: 0 10px 30px rgba(0,30,80,0.12); position:relative; overflow:hidden;">
+        <!-- 淡雅暗纹装饰 -->
+        <div style="position:absolute; top:10px; left:15px; font-size:36px; opacity:0.06;">♡</div>
+        <div style="position:absolute; bottom:15px; right:20px; font-size:36px; opacity:0.06;">✦</div>
+
+        <h2 style="color:#0066cc; font-size:22px; letter-spacing:2px; margin-bottom:18px;">希望我能继续陪你度过21岁</h2>
+        <p style="margin:12px 0; color:#444; line-height:1.9; font-size:15px;">
+            以文字收藏偏爱<br>
+            用镜头定格心动
+        </p>
+        <p style="margin:12px 0; color:#444; line-height:1.9; font-size:15px;">
+            是落笔温柔的创作者<br>
+            是捕捉美好的记录者
+        </p>
+        <div style="width:60px; height:2px; background:#0066cc; margin:22px auto; opacity:0.3;"></div>
+        <p style="color:#0055aa; font-weight:500; line-height:2; font-size:15px;">
+            双向陪伴，岁岁同行<br>
+            热爱绵长，温暖长存
+        </p>
+        <p style="margin-top:20px; color:#666; font-size:14px;">
+            小屋落成 · 回忆珍藏 · 来日方长
+        </p>
+
+        <button class="btn" id="restartBtn" style="margin-top:28px;">桀桀桀如此完美的代码你不想要再来一次观赏一次吗</button>
+    </div>
+</div>
+
+    <script>
+        const mouseFollow = document.querySelector('.mouse-follow');
+        document.addEventListener('mousemove', (e) => {
+            mouseFollow.style.left = e.clientX - 10 + 'px';
+            mouseFollow.style.top = e.clientY - 10 + 'px';
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.classList.contains('btn') || e.target.classList.contains('full-house') || e.target.classList.contains('house-spot') || e.target.classList.contains('skill-card') || e.target.classList.contains('cake') || e.target.classList.contains('build-btn')){
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = e.clientX - 10 + 'px';
+                heart.style.top = e.clientY - 10 + 'px';
+                document.body.appendChild(heart);
+                setTimeout(()=>heart.remove(), 1000);
+            }
+        });
+
+        function createFireworks(x,y){
+            for(let i=0;i<30;i++){
+                const f = document.createElement('div');
+                f.className = 'fireworks';
+                f.style.left = x+'px';
+                f.style.top = y+'px';
+                f.style.background = `hsl(${Math.random()*360},100%,50%)`;
+                document.body.appendChild(f);
+                setTimeout(()=>f.remove(),1000);
+            }
+        }
+
+        window.onload = () => {
+            setTimeout(()=>startModal.classList.add('active'),500);
+        }
+        startBtn.onclick = () => {
+            startModal.classList.remove('active');
+            level1.classList.add('active');
+        }
+
+        door.onclick = () => {
+            door.classList.add("open");
+            doorModal.classList.add('active');
+            createFireworks(door.offsetLeft+140, door.offsetTop+160);
+        }
+        toLevel2.onclick = () => {
+            doorModal.classList.remove('active');
+            level1.classList.remove('active');
+            level2.classList.add('active');
+        }
+
+        let buildStep = 0;
+        const buildBtns = document.querySelectorAll('.build-btn');
+        const buildTip = document.querySelector('.build-tip');
+        const partList = document.querySelectorAll('.build-part');
+        const buildMark = document.querySelector('.build-mark');
+
+        const orderParts = [[0],[1,2],[3],[4]];
+
+        buildBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const step = Number(this.dataset.step);
+                if (step !== buildStep + 1) return;
+                this.classList.add('active');
+                buildStep++;
+                buildTip.innerText = `当前进度：${buildStep} / 4`;
+                orderParts[step - 1].forEach(idx => {
+                    partList[idx].classList.add('show');
+                });
+                createFireworks(this.offsetLeft + 30, this.offsetTop + 20);
+                if (buildStep === 4) {
+                    buildMark.classList.add('show');
+                    setTimeout(() => {
+                        frameModal.classList.add('active');
+                    }, 1200);
+                }
+            });
+        });
+
+        toLevel3.onclick = () => {
+            frameModal.classList.remove('active');
+            level2.classList.remove('active');
+            level3.classList.add('active');
+        };
+
+        const houseSpots = document.querySelectorAll('.house-spot');
+        const houseContainer = document.querySelector('.house-container');
+        const houseComplete = document.getElementById('houseComplete');
+        let houseClicked = 0;
+
+const items = [
+    { top:'60px',left:'80px', text:'BE人歌', desc:'点击打开观看', link:'https://www.bilibili.com/video/BV1DL411g7H6/?spm_id_from=333.337.search-card.all.click&vd_source=d8cd97232cbb5937287931d16f409e03' },
+    { top:'100px',right:'100px', text:'兔子大王的be', desc:'点击打开观看', link:'https://www.bilibili.com/video/BV1Lu411f7k5/?spm_id_from=333.337.search-card.all.click&vd_source=d8cd97232cbb5937287931d16f409e03' },
+    { bottom:'160px',left:'120px', text:'IWLY', desc:'点击打开观看', link:'https://www.bilibili.com/video/BV17J4m1u7Mp/?spm_id_from=333.337.search-card.all.click&vd_source=d8cd97232cbb5937287931d16f409e03' },
+    { bottom:'100px',right:'130px', text:'sorry sorry~', desc:'点击打开观看', link:'https://www.bilibili.com/video/BV1iJ411x7jV/?spm_id_from=333.337.search-card.all.click&vd_source=d8cd97232cbb5937287931d16f409e03' },
+    { top:'200px',left:'50%',transform:'translateX(-50%)', text:'偷西装', desc:'点击打开观看', link:'https://www.bilibili.com/video/BV1ax411L7qe/?spm_id_from=333.337.search-card.all.click&vd_source=d8cd97232cbb5937287931d16f409e03' }
+];
+    
+        houseSpots.forEach((spot, idx) => {
+            spot.onclick = (event) => {
+                if(spot.classList.contains('done')) return;
+                spot.classList.add('done');
+                houseClicked++;
+
+                const it = document.createElement('div');
+                it.className = 'house-item';
+                it.style.top = items[idx].top;
+                if(items[idx].left) it.style.left = items[idx].left;
+                if(items[idx].right) it.style.right = items[idx].right;
+                if(items[idx].bottom) it.style.bottom = items[idx].bottom;
+                if(items[idx].transform) it.style.transform = items[idx].transform;
+
+it.innerHTML = `
+    <a href="${items[idx].link}" target="_blank" style="text-decoration:none; color:inherit;">
+        <div class="cover-box">
+            点击查看舞台
+        </div>
+        <p>${items[idx].text}</p>
+        <p style="font-size:12px; color:#666;">${items[idx].desc}</p>
+    </a>
+`;
+                houseContainer.appendChild(it);
+                createFireworks(event.clientX, event.clientY);
+
+                if(houseClicked === 5){
+                    setTimeout(()=>{
+                        houseComplete.classList.add('active');
+                        createFireworks(window.innerWidth/2, window.innerHeight/2);
+                        setTimeout(()=>{
+                            houseComplete.classList.remove('active');
+                            houseModal.classList.add('active');
+                        },2000);
+                    },600);
+                }
+            }
+        });
+
+        toLevel4.onclick = () => {
+            houseModal.classList.remove('active');
+            level3.classList.remove('active');
+            level4.classList.add('active');
+        }
+// 第四关 升级版 解锁作品展示逻辑（修复跳转）
+let w = 0, e = 0;
+const skillTip = document.getElementById('skillTip');
+const writeWorkBox = document.getElementById('writeWorkBox');
+const editWorkBox = document.getElementById('editWorkBox');
+
+writeCard.onclick = () => {
+    if(w)return;
+    w = 1;
+    writeCard.classList.add('active-card');
+    writeCard.querySelector('span').innerText = "已解锁";
+    writeWorkBox.style.display = "block";
+    skillTip.innerText = "已解锁：同人文手｜继续点亮剪辑天赋";
+    checkSkill();
+};
+editCard.onclick = () => {
+    if(e)return;
+    e = 1;
+    editCard.classList.add('active-card');
+    editCard.querySelector('span').innerText = "已解锁";
+    editWorkBox.style.display = "block";
+    skillTip.innerText = "已解锁：剪辑大神｜静待双重圆满";
+    checkSkill();
+};
+
+function checkSkill(){
+    if(w && e){
+        skillTip.innerText = "✨双重才华全部收集完成，作品墙已完整展示✨";
+        createFireworks(window.innerWidth / 2, window.innerHeight / 2);
+        setTimeout(() => {
+            skillModal.classList.add('active');
+        }, 1200);
+    }
+}
+
+// 关卡跳转逻辑（确保toLevel5存在）
+toLevel5.onclick = () => {
+    skillModal.classList.remove('active');
+    level4.classList.remove('active');
+    level5.classList.add('active');
+}
+
+// 第五关 优化版｜无生日 回忆寄语逻辑
+const memoBox = document.getElementById('memoBox');
+
+memoBox.onclick = () => {
+    setTimeout(()=>{
+        wishInput.classList.remove('hidden');
+        wishBtn.classList.remove('hidden');
+    }, 600);
+}
+
+wishBtn.onclick = () => {
+    let content = wishInput.value.trim();
+    // 禁止空白提交
+    if(content === ""){
+        alert("请写下一段专属寄语再保存哦");
+        return;
+    }
+    wishInput.classList.add('hidden');
+    wishBtn.classList.add('hidden');
+    createFireworks(window.innerWidth / 2, window.innerHeight / 2);
+    setTimeout(()=>wishModal.classList.add('active'), 1200);
+}
+        toLevel6.onclick = () => {
+            wishModal.classList.remove('active');
+            level5.classList.remove('active');
+            level6.classList.add('active');
+            for(let i=0;i<50;i++){
+                setTimeout(()=>createFireworks(Math.random()*window.innerWidth, Math.random()*window.innerHeight),i*50);
+            }
+        }
+
+        restartBtn.onclick = () => location.reload();
+    </script>
+</body>
+</html>
